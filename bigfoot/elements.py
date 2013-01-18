@@ -169,6 +169,8 @@ class TemplateElement(RenderableMixin):
 
 class Table(TemplateElement):
     def __init__(self, data, columns, *args, **kwargs):
+        self.table_class = kwargs.pop('table_class', tables.Table)
+        self.table_attrs = kwargs.pop('table_attrs', {})
         super(Table, self).__init__(*args, **kwargs)
         self.data = data
         self.columns = columns
@@ -179,19 +181,25 @@ class Table(TemplateElement):
         # Create a table renderer
         attrs = SortedDict()
         for col in self.columns.keys():
-            attrs[col] = tables.Column()
-        TableClass = type('BigFootTable', (tables.Table,), attrs)
+            attrs[col] = tables.Column(orderable=False)
+        Meta = getattr(self.table_class, 'Meta',
+            type('Meta', tuple(), {'attrs': {}}))
+        Meta.attrs.update(self.table_attrs)
+        attrs['Meta'] = Meta
+        TableClass = type('BigFootTable', (self.table_class,), attrs)
 
-        data = BigfootIter(self.data, self.columns)
+        data = BigfootIter(self.data, self.columns, context)
         table = TableClass(data)
-        import ipdb; ipdb.set_trace()
         context['table'] = table
         return mark_safe(render_to_string(self.get_template_name(), context))
 
 class FormField(TemplateElement):
+    add_to_context = ('show_label',)
+
     def __init__(self, form, field_name, **kwargs):
         self.form = form
         self.name = field_name
+        self.show_label = kwargs.pop('show_label', True)
         super(FormField, self).__init__(**kwargs)
 
     def render(self, **kwargs):
@@ -226,6 +234,7 @@ class ElementSet(TemplateElement):
     def render(self, **kwargs):
         rendered_set = []
         for element in self.elements:
+            element.data = self.data or element.data
             rendered_set.append(element.render(**self.context))
         return super(ElementSet, self).render(elements=rendered_set, **kwargs)
 

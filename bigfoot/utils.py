@@ -126,11 +126,11 @@ def formfields(form, *fields, **kwargs):
     :returns: An instance of wrapper_class if specified. Otherwise `list`.
     """
 
-    wrapper_class = kwargs.get('wrapper_class', elements.ElementSet)
-    field_class = kwargs.get('field_class', elements.FormField)
+    wrapper_class = kwargs.pop('wrapper_class', elements.ElementSet)
+    field_class = kwargs.pop('field_class', elements.FormField)
     if not fields:
         fields = form.fields.keys()
-    res = [field_class(form, field) for field in fields]
+    res = [field_class(form, field, **kwargs) for field in fields]
     if wrapper_class:
         res = wrapper_class(*res)
     return res
@@ -177,6 +177,8 @@ class Proxy(object):
         '__rtruediv__', '__rxor__', '__setitem__', '__setslice__', '__sub__', 
         '__truediv__', '__xor__', 'next',
     ]
+
+    _implemented = []
     
     @classmethod
     def _create_class_proxy(cls, theclass):
@@ -189,7 +191,9 @@ class Proxy(object):
         
         namespace = {}
         for name in cls._special_names:
-            if hasattr(theclass, name):
+            if name in cls._implemented:
+                namespace[name] = getattr(cls, name)
+            elif hasattr(theclass, name):
                 namespace[name] = make_method(name)
         return type("%s(%s)" % (cls.__name__, theclass.__name__), (cls,), namespace)
     
@@ -219,7 +223,9 @@ class BigfootIter(Proxy):
     required by the table being rendered.
     """
 
-    def __init__(self, data, translator):
+    _implemented = ['__iter__']
+
+    def __init__(self, data, translator, context):
         """ Initialization.
 
         :type  data: Queryset or anything list-like.
@@ -241,11 +247,12 @@ class BigfootIter(Proxy):
         super(BigfootIter, self).__init__(data)
         self.data = data
         self.translator = translator
+        self.context = context
 
     def __iter__(self):
         for row in self.data:
             vals = dict()
-            for name, trans in self.column.items():
+            for name, trans in self.translator.items():
                 rendered = False
                 try:
                     # Try as an accessor
@@ -256,8 +263,8 @@ class BigfootIter(Proxy):
 
                 if not rendered:
                     # Try as a renderable
-                    val.data = row
-                    val = val.render(**self.context)
+                    trans.data = row
+                    val = trans.render(**self.context)
 
                 vals[name] = val
 
