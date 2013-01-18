@@ -13,6 +13,7 @@ import django_tables2 as tables
 from .utils import BigfootIter
 from .utils import render_field
 from .utils import convert_camel_case
+from .utils import flatatt
 
 __all__ = ('Element', 'Link', 'TemplateElement', 'FormField', 'ElementSet',
     'FormFieldSet', 'Form', 'Table')
@@ -134,12 +135,15 @@ class TemplateElement(RenderableMixin):
     context = None
     request = None
     add_to_context = dict()
+    attrs = None
 
-    def __init__(self, template_name=None, context=None, request=None):
+    def __init__(self, template_name=None, context=None, request=None,
+    attrs=None):
         context = context or {}
         self.request = request
         self.context = context
         self.template_name = template_name
+        self.attrs = attrs or {}
 
     def render(self, **kwargs):
         context = self.get_context_data(**kwargs)
@@ -161,9 +165,12 @@ class TemplateElement(RenderableMixin):
             key = '%s_%s' % (self.__class__.__name__.lower(), attr)
             context[key] = val
 
+        context['attrs'] = mark_safe(flatatt(self.attrs))
+
         # Return a request context if we have the request
         if self.request:
             return RequestContext(self.request, context)
+
 
         return context
 
