@@ -22,7 +22,6 @@ class RenderableMixin(object):
     data = None
 
     def render(self, **kwargs):
-        print(self.__class_name__)
         raise ImproperlyConfigured('Subclass must implement render.')
 
     def __unicode__(self):
