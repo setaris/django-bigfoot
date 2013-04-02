@@ -105,7 +105,8 @@ class Element(RenderableMixin):
     def render_inner(self):
         html = self.get('html')
         if html:
-            return html
+            # coerce to string in case the html is a bigfoot element
+            return unicode(html)
         else:
             return escape(self.get('inner'))
 
