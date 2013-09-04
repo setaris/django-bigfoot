@@ -2,8 +2,6 @@ import sys
 
 from setuptools import setup, find_packages
 
-from bigfoot import __version__
-
 install_requires = [
     'django >= 1.4',
     'django-tables2 == 0.13'
