@@ -5,7 +5,7 @@ django-bigfoot - HTML building block for Django
 __Currently a work in progress. Please email us if you're intersted in using
 it.__
 
-django-bigfoot makes helps define HTML building block (e.g., forms, form
+django-bigfoot makes helps define HTML building blocks (e.g., forms, form
 fields, tables) that can be easily be combined and rendered into HTML.
 
 What do I want that for?!

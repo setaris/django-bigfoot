@@ -1,4 +1,3 @@
-__version__ = "0.1"
 try:
     from .elements import *
 except ImportError:
