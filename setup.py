@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 install_requires = [
     'django >= 1.4',
-    'django-tables2 == 0.13'
+    'django-tables2 >= 0.13'
 ]
 
 setup(
