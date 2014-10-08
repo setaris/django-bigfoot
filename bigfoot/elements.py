@@ -10,10 +10,10 @@ from django.utils.safestring import mark_safe
 
 import django_tables2 as tables
 
-from .utils import BigfootIter
-from .utils import render_field
-from .utils import convert_camel_case
-from .utils import flatatt
+from bigfoot.utils import BigfootIter
+from bigfoot.utils import render_field
+from bigfoot.utils import convert_camel_case
+from bigfoot.utils import flatatt
 
 __all__ = ('Element', 'Link', 'TemplateElement', 'FormField', 'ElementSet',
     'FormFieldSet', 'Form', 'Table')

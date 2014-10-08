@@ -8,8 +8,6 @@ from django.template import Context
 from django.template.loader import get_template
 from django.utils.html import conditional_escape
 
-import elements
-
 def render_field(field, form, form_style, context, template, labelclass=None, layout_object=None, attrs=None):
     """
     Taken from django-crispy-forms. Renders a form field
@@ -125,7 +123,7 @@ def formfields(form, *fields, **kwargs):
 
     :returns: An instance of wrapper_class if specified. Otherwise `list`.
     """
-
+    from bigfoot import elements
     wrapper_class = kwargs.pop('wrapper_class', elements.ElementSet)
     field_class = kwargs.pop('field_class', elements.FormField)
     if not fields:
