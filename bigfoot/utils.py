@@ -8,6 +8,11 @@ from django.template import Context
 from django.template.loader import get_template
 from django.utils.html import conditional_escape
 
+try:
+    basestr
+except NameError:
+    basestr = str
+
 def render_field(field, form, form_style, context, template, labelclass=None, layout_object=None, attrs=None):
     """
     Taken from django-crispy-forms. Renders a form field
@@ -42,12 +47,12 @@ def render_field(field, form, form_style, context, template, labelclass=None, la
     else:
         # This allows fields to be unicode strings, always they don't use non ASCII
         try:
-            if isinstance(field, unicode):
+            if isinstance(field, basestr):
                 field = str(field)
             # If `field` is not unicode then we turn it into a unicode string, otherwise doing
             # str(field) would give no error and the field would not be resolved, causing confusion 
             else:
-                field = str(unicode(field))
+                field = str(field)
                 
         except (UnicodeEncodeError, UnicodeDecodeError):
             raise Exception("Field '%s' is using forbidden unicode characters" % field)

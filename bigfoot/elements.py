@@ -15,6 +15,11 @@ from bigfoot.utils import render_field
 from bigfoot.utils import convert_camel_case
 from bigfoot.utils import flatatt
 
+try:
+    tostr = unicode
+except NameError:
+    tostr = str
+
 __all__ = ('Element', 'Link', 'TemplateElement', 'FormField', 'ElementSet',
     'FormFieldSet', 'Form', 'Table')
 
@@ -29,7 +34,7 @@ class RenderableMixin(object):
         return res
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return tostr(self).encode('utf-8')
 
     def get(self, attr):
         """ Returns the requested attribute or, if the value of the attribute
@@ -106,7 +111,7 @@ class Element(RenderableMixin):
         html = self.get('html')
         if html:
             # coerce to string in case the html is a bigfoot element
-            return unicode(html)
+            return tostr(html)
         else:
             return escape(self.get('inner'))
 
