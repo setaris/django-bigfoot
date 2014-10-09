@@ -30,11 +30,10 @@ class RenderableMixin(object):
         raise ImproperlyConfigured('Subclass must implement render.')
 
     def __unicode__(self):
-        res = self.render()
-        return res
+        return mark_safe(unicode(self.render()))
 
     def __str__(self):
-        return tostr(self).encode('utf-8')
+        return mark_safe(tostr(self.render()))
 
     def get(self, attr):
         """ Returns the requested attribute or, if the value of the attribute
