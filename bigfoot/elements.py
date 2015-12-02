@@ -4,7 +4,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.template.defaulttags import CsrfTokenNode
-from django.utils.datastructures import SortedDict
+from collections import OrderedDict
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
@@ -190,7 +190,7 @@ class Table(TemplateElement):
         context = self.get_context_data(**kwargs)
 
         # Create a table renderer
-        attrs = SortedDict()
+        attrs = OrderedDict()
         for col in self.columns.keys():
             attrs[col] = tables.Column(orderable=False)
         Meta = getattr(self.table_class, 'Meta',
