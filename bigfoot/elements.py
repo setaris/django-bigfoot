@@ -1,7 +1,6 @@
 import re
 
 from django.core.exceptions import ImproperlyConfigured
-from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.template.defaulttags import CsrfTokenNode
 from collections import OrderedDict
@@ -151,7 +150,8 @@ class TemplateElement(RenderableMixin):
 
     def render(self, **kwargs):
         context = self.get_context_data(**kwargs)
-        return mark_safe(render_to_string(self.get_template_name(), context))
+        return mark_safe(render_to_string(self.get_template_name(), context,
+            request=self.request))
 
     def get_template_name(self):
         template_name = self.get('template_name')
@@ -170,11 +170,6 @@ class TemplateElement(RenderableMixin):
             context[key] = val
 
         context['attrs'] = mark_safe(flatatt(self.attrs))
-
-        # Return a request context if we have the request
-        if self.request:
-            return RequestContext(self.request, context)
-
 
         return context
 
