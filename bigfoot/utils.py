@@ -39,9 +39,6 @@ def render_field(field, form, form_style, context, template, labelclass=None, la
     if not hasattr(form, 'rendered_fields'):
         form.rendered_fields = set()
 
-    if isinstance(context, dict):
-        context = Context(context)
-
     if hasattr(field, 'render'):
         return field.render(form, form_style, context)
     else:
