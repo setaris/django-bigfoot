@@ -7,8 +7,6 @@ from collections import OrderedDict
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 
-import django_tables2 as tables
-
 from bigfoot.utils import BigfootIter
 from bigfoot.utils import render_field
 from bigfoot.utils import convert_camel_case
@@ -20,7 +18,7 @@ except NameError:
     tostr = str
 
 __all__ = ('Element', 'Link', 'TemplateElement', 'FormField', 'ElementSet',
-    'FormFieldSet', 'Form', 'Table')
+    'FormFieldSet', 'Form')
 
 class RenderableMixin(object):
     data = None
@@ -172,32 +170,6 @@ class TemplateElement(RenderableMixin):
         context['attrs'] = mark_safe(flatatt(self.attrs))
 
         return context
-
-class Table(TemplateElement):
-    def __init__(self, data, columns, *args, **kwargs):
-        self.table_class = kwargs.pop('table_class', tables.Table)
-        self.table_attrs = kwargs.pop('table_attrs', {})
-        super(Table, self).__init__(*args, **kwargs)
-        self.data = data
-        self.columns = columns
-
-    def render(self, **kwargs):
-        context = self.get_context_data(**kwargs)
-
-        # Create a table renderer
-        attrs = OrderedDict()
-        for col in self.columns.keys():
-            attrs[col] = tables.Column(orderable=False)
-        Meta = getattr(self.table_class, 'Meta',
-            type('Meta', tuple(), {'attrs': {}}))
-        Meta.attrs.update(self.table_attrs)
-        attrs['Meta'] = Meta
-        TableClass = type('BigFootTable', (self.table_class,), attrs)
-
-        data = BigfootIter(self.data, self.columns, context)
-        table = TableClass(data)
-        context['table'] = table
-        return mark_safe(render_to_string(self.get_template_name(), context))
 
 class FormField(TemplateElement):
     add_to_context = ('show_label',)
